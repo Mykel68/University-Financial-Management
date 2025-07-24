@@ -1,3 +1,5 @@
+// db/schema.ts
+
 import {
   boolean,
   integer,
@@ -14,20 +16,35 @@ import {
 //   email: varchar({ length: 255 }).notNull().unique(),
 // });
 
+// export const user = pgTable("user", {
+//   id: text("id").primaryKey(),
+//   name: text("name").notNull(),
+//   email: text("email").notNull().unique(),
+//   emailVerified: boolean("email_verified")
+//     .$defaultFn(() => false)
+//     .notNull(),
+//   image: text("image"),
+//   createdAt: timestamp("created_at")
+//     .$defaultFn(() => /* @__PURE__ */ new Date())
+//     .notNull(),
+//   updatedAt: timestamp("updated_at")
+//     .$defaultFn(() => /* @__PURE__ */ new Date())
+//     .notNull(),
+// });
+
 export const user = pgTable("user", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
+  id: text("id").primaryKey(), // UUID
+  name: text("name").notNull(), // firstName + lastName
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
   email: text("email").notNull().unique(),
-  emailVerified: boolean("email_verified")
-    .$defaultFn(() => false)
-    .notNull(),
-  image: text("image"),
-  createdAt: timestamp("created_at")
-    .$defaultFn(() => /* @__PURE__ */ new Date())
-    .notNull(),
-  updatedAt: timestamp("updated_at")
-    .$defaultFn(() => /* @__PURE__ */ new Date())
-    .notNull(),
+  role: text("role").notNull(),
+  department: text("department"),
+  password: text("password").notNull(),
+
+  emailVerified: boolean("email_verified").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const session = pgTable("session", {
