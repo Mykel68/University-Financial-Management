@@ -6,19 +6,11 @@ import { v4 as uuidv4 } from "uuid";
 import { createTRPCRouter, baseProcedure } from "../init";
 import { user } from "@/db/schema";
 import { eq } from "drizzle-orm";
-
-const registerInputSchema = z.object({
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  email: z.string().email(),
-  role: z.enum(["system_admin", "finance_officer", "department_head"]),
-  department: z.string().optional(),
-  password: z.string().min(8),
-});
+import { registerSchema } from "@/schema/auth";
 
 export const authRouter = createTRPCRouter({
   register: baseProcedure
-    .input(registerInputSchema)
+    .input(registerSchema.omit({ confirmPassword: true })) // no need to send confirmPassword to server
     .mutation(async ({ ctx, input }) => {
       // Check if user already exists
       const existingUser = await ctx.db.query.user.findFirst({
