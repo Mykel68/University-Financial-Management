@@ -24,10 +24,21 @@ export function useAuth() {
   const register = async (data: RegisterData) => {
     setIsLoading(true);
     try {
-      // First register with your custom backend
+      // 1. Register in your backend
       await registerMutation.mutateAsync(data);
 
-      // Then sign in with Better Auth
+      // 2. Then register in BetterAuth
+      const betterAuthUser = await authClient.signUp.email({
+        email: data.email,
+        password: data.password,
+        name: `${data.firstName} ${data.lastName}`,
+      });
+
+      if (betterAuthUser.error) {
+        throw new Error(betterAuthUser.error.message);
+      }
+
+      // 3. Then sign in
       const signInResult = await authClient.signIn.email({
         email: data.email,
         password: data.password,
@@ -38,9 +49,6 @@ export function useAuth() {
       }
 
       toast.success("Account created successfully! You are now logged in.");
-
-      // Redirect or handle success
-      //   window.location.href = "/dashboard"; // or use your preferred routing method
       router.push("/dashboard");
     } catch (error) {
       console.error("Registration error:", error);

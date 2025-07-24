@@ -53,4 +53,53 @@ export const authRouter = createTRPCRouter({
         },
       };
     }),
+
+  login: baseProcedure
+    .input(
+      z.object({
+        email: z.string().email(),
+        password: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const foundUser = await ctx.db.query.user.findFirst({
+        where: eq(user.email, input.email),
+        columns: {
+          id: true,
+          name: true,
+          email: true,
+          password: true,
+          role: true,
+        },
+      });
+
+      console.log(user);
+      if (!foundUser) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+      console.log(user);
+      const isPasswordValid = await bcrypt.compare(
+        input.password,
+        foundUser.password
+      );
+
+      if (!isPasswordValid) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Invalid credentials",
+        });
+      }
+      return {
+        success: true,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      };
+    }),
 });
