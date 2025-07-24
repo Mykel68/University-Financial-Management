@@ -1,22 +1,41 @@
 "use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { registerSchema, RegisterFormData } from '@/lib/validations/auth';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Loader2, Eye, EyeOff } from "lucide-react";
+import { RegisterFormData, registerSchema } from "@/schema/auth";
+import { useAuth } from "@/hooks/use-auth";
 
 interface RegisterFormProps {
   onToggleMode: () => void;
 }
 
-export function RegisterForm({ onToggleMode }: RegisterFormProps) {
+export default function RegisterForm({ onToggleMode }: RegisterFormProps) {
   const { register, isLoading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -24,29 +43,31 @@ export function RegisterForm({ onToggleMode }: RegisterFormProps) {
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      department: '',
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      department: "",
     },
   });
 
-  const selectedRole = form.watch('role');
+  const selectedRole = form.watch("role");
 
   const onSubmit = async (data: RegisterFormData) => {
     const { confirmPassword, ...registerData } = data;
-    await register(registerData);
+    try {
+      await register(registerData);
+    } catch (error) {
+      console.error("Registration failed:", error);
+    }
   };
 
   return (
     <Card className="w-full max-w-md mx-auto shadow-primary">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
-        <CardDescription>
-          Register for UFMS access
-        </CardDescription>
+        <CardDescription>Register for UFMS access</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -87,7 +108,7 @@ export function RegisterForm({ onToggleMode }: RegisterFormProps) {
                 )}
               />
             </div>
-            
+
             <FormField
               control={form.control}
               name="email"
@@ -113,16 +134,26 @@ export function RegisterForm({ onToggleMode }: RegisterFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Role</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    disabled={isLoading}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select your role" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="system_admin">System Administrator</SelectItem>
-                      <SelectItem value="finance_officer">Finance Officer (Bursar's Office)</SelectItem>
-                      <SelectItem value="department_head">Department Head/Manager</SelectItem>
+                      <SelectItem value="system_admin">
+                        System Administrator
+                      </SelectItem>
+                      <SelectItem value="finance_officer">
+                        Finance Officer (Bursar's Office)
+                      </SelectItem>
+                      <SelectItem value="department_head">
+                        Department Head/Manager
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -130,7 +161,7 @@ export function RegisterForm({ onToggleMode }: RegisterFormProps) {
               )}
             />
 
-            {selectedRole === 'department_head' && (
+            {selectedRole === "department_head" && (
               <FormField
                 control={form.control}
                 name="department"
@@ -159,7 +190,7 @@ export function RegisterForm({ onToggleMode }: RegisterFormProps) {
                   <FormControl>
                     <div className="relative">
                       <Input
-                        type={showPassword ? 'text' : 'password'}
+                        type={showPassword ? "text" : "password"}
                         placeholder="Create a strong password"
                         {...field}
                         disabled={isLoading}
@@ -194,7 +225,7 @@ export function RegisterForm({ onToggleMode }: RegisterFormProps) {
                   <FormControl>
                     <div className="relative">
                       <Input
-                        type={showConfirmPassword ? 'text' : 'password'}
+                        type={showConfirmPassword ? "text" : "password"}
                         placeholder="Confirm your password"
                         {...field}
                         disabled={isLoading}
@@ -204,7 +235,9 @@ export function RegisterForm({ onToggleMode }: RegisterFormProps) {
                         variant="ghost"
                         size="sm"
                         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
                         disabled={isLoading}
                       >
                         {showConfirmPassword ? (
@@ -227,10 +260,10 @@ export function RegisterForm({ onToggleMode }: RegisterFormProps) {
                   Creating Account...
                 </>
               ) : (
-                'Create Account'
+                "Create Account"
               )}
             </Button>
-            
+
             <div className="text-center">
               <Button
                 type="button"
@@ -247,3 +280,4 @@ export function RegisterForm({ onToggleMode }: RegisterFormProps) {
       </CardContent>
     </Card>
   );
+}
