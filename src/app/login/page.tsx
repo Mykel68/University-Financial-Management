@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getSession } from "@/lib/auth";
-import { LoginButtons } from "@/components/ui/auth/login-buttons";
+import { LoginButtons } from "@/components/auth/login-buttons";
 
 const LoginPage = async () => {
   const session = await getSession();
