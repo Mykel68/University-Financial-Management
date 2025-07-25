@@ -73,14 +73,14 @@ export const authRouter = createTRPCRouter({
         },
       });
 
-      console.log(user);
+      //   console.log(user);
       if (!foundUser) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "User not found",
         });
       }
-      console.log(user);
+      //   console.log(user);
       const isPasswordValid = await bcrypt.compare(
         input.password,
         foundUser.password
