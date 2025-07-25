@@ -96,10 +96,10 @@ export const authRouter = createTRPCRouter({
       return {
         success: true,
         user: {
-          id: foundUser.id,
-          name: foundUser.name,
-          email: foundUser.email,
-          role: foundUser.role,
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
         },
       };
     }),
