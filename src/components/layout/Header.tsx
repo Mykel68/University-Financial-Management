@@ -11,13 +11,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-// import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, User, Settings } from "lucide-react";
+import { useUserStore } from "@/store/user";
 
 export function Header() {
-  //   const { user, logout } = useAuth();
+  const { user } = useUserStore();
 
-  if (!user) return null;
+  if (!user) return <>No User</>;
 
   const getRoleLabel = (role: string) => {
     switch (role) {
@@ -57,9 +57,7 @@ export function Header() {
 
         <div className="flex items-center space-x-4">
           <div className="hidden md:block text-right">
-            <p className="text-sm font-medium">
-              {user.firstName} {user.lastName}
-            </p>
+            <p className="text-sm font-medium">{user.name}</p>
             <p className="text-xs text-muted-foreground">{user.email}</p>
           </div>
 
@@ -71,8 +69,7 @@ export function Header() {
               >
                 <Avatar className="h-10 w-10">
                   <AvatarFallback className="bg-primary text-primary-foreground">
-                    {user.firstName[0]}
-                    {user.lastName[0]}
+                    {user.name}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -80,9 +77,7 @@ export function Header() {
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium">
-                    {user.firstName} {user.lastName}
-                  </p>
+                  <p className="text-sm font-medium">{user.name}</p>
                   <p className="text-xs text-muted-foreground">{user.email}</p>
                   {user.department && (
                     <p className="text-xs text-muted-foreground">
@@ -101,7 +96,10 @@ export function Header() {
                 <span>Settings</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={logout} className="text-destructive">
+              <DropdownMenuItem
+                //    onClick={logout}
+                className="text-destructive"
+              >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>
               </DropdownMenuItem>

@@ -42,8 +42,7 @@ export default function LoginForm({ onToggleMode }: LoginFormProps) {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    const response = await login(data.email, data.password);
-    console.log(response);
+    await login(data.email, data.password);
 
     // setUser(response);
   };
