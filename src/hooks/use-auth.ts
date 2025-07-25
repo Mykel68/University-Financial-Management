@@ -2,7 +2,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+
+import { useRouter } from "next/navigation";
+
 import { trpc } from "@/trpc/client";
+
 
 type Role = "system_admin" | "finance_officer" | "department_head";
 
@@ -34,7 +38,18 @@ export function useAuth() {
         password: data.password,
       });
 
+
+      if (signInResult.error) {
+        throw new Error(signInResult.error.message);
+      }
+
+      toast.success("Account created successfully! You are now logged in.");
+
+      // Redirect or handle success
+      //   window.location.href = "/dashboard"; // or use your preferred routing method
+
       toast.success("You're now logged in!");
+
       router.push("/dashboard");
     } catch (error) {
       console.error("Registration error:", error);
@@ -51,6 +66,9 @@ export function useAuth() {
     try {
       await loginMutation.mutateAsync({ email, password });
       toast.success("Signed in successfully!");
+
+      //   window.location.href = "/dashboard";
+
       router.push("/dashboard");
     } catch (error) {
       console.error("Sign in error:", error);
