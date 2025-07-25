@@ -22,6 +22,7 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(false);
 
   const setUser = useUserStore((state) => state.setUser);
+  const logout = useUserStore((state) => state.logout);
 
   const registerMutation = trpc.auth.register.useMutation();
   const loginMutation = trpc.auth.login.useMutation();
@@ -70,7 +71,11 @@ export function useAuth() {
 
   const signOut = async () => {
     try {
-      await signOutMutation.mutateAsync();
+      const response = await signOutMutation.mutateAsync();
+      if (response.success) {
+        logout();
+        router.push("/sign-in");
+      }
     } catch (error) {
       //   console.error("Sign out error:", error);
       toast.error("Sign out failed");

@@ -1,5 +1,4 @@
-"use client"; // 👈 Needed to use Zustand + trpc
-
+"use client";
 import React, { useEffect } from "react";
 import { trpc } from "@/trpc/client";
 import { useUserStore } from "@/store/user";
@@ -19,7 +18,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     }
   }, [data, setUser]);
 
-  if (isLoading) return <div>Loading layout...</div>;
+  if (isLoading) return null;
   if (isError) return router.push("/sign-in");
 
   return <div>{children}</div>;
