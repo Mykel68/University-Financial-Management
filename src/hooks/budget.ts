@@ -12,23 +12,28 @@ export function useBudget() {
   const addBudgetMutation = trpc.budget.addBudget.useMutation({
     onMutate: () => setIsLoading(true),
     onSettled: () => setIsLoading(false),
-    onSuccess: () => {
-      toast.success("Budget created successfully");
-    },
-    onError: () => {
-      toast.error("Failed to create budget");
-    },
+    onSuccess: () => toast.success("Budget created successfully"),
+    onError: () => toast.error("Failed to create budget"),
   });
 
+  // ✅ Fetch all budgets
+  const allBudgets = trpc.budget.getBudgets.useQuery();
+
+  // ✅ Fetch department-specific budgets
+  const departmentBudgets = trpc.budget.getDepartmentBudgets.useQuery(
+    { department: user?.department || "" },
+    { enabled: !!user?.department } // only fetch when available
+  );
+
   const createBudget = (data: { title: string; amount: number }) => {
-    if (!user?.id) {
-      toast.error("User not found");
+    if (!user?.id || !user?.department) {
+      toast.error("User or department not found");
       return;
     }
 
     addBudgetMutation.mutate({
       title: data.title,
-      amount: data.amount.toString(), // convert number to string ✅
+      amount: data.amount.toString(),
       userId: user.id,
       department: user.department,
     });
@@ -37,5 +42,7 @@ export function useBudget() {
   return {
     createBudget,
     isLoading,
+    allBudgets: allBudgets.data,
+    departmentBudgets: departmentBudgets.data,
   };
 }
