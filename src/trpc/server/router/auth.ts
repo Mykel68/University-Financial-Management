@@ -11,7 +11,7 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 import { createTRPCRouter, baseProcedure } from "../init";
 import { user } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { registerSchema } from "@/schema/auth";
+import { loginSchema, registerSchema } from "@/schema/auth";
 
 export const authRouter = createTRPCRouter({
   register: baseProcedure
@@ -60,78 +60,71 @@ export const authRouter = createTRPCRouter({
       };
     }),
 
-  login: baseProcedure
-    .input(
-      z.object({
-        email: z.string().email(),
-        password: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const foundUser = await ctx.db.query.user.findFirst({
-        where: eq(user.email, input.email),
-        columns: {
-          id: true,
-          name: true,
-          email: true,
-          password: true,
-          role: true,
-          department: true,
-        },
+  login: baseProcedure.input(loginSchema).mutation(async ({ ctx, input }) => {
+    const foundUser = await ctx.db.query.user.findFirst({
+      where: eq(user.email, input.email),
+      columns: {
+        id: true,
+        name: true,
+        email: true,
+        password: true,
+        role: true,
+        department: true,
+      },
+    });
+
+    if (!foundUser) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "User not found",
       });
+    }
 
-      if (!foundUser) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "User not found",
-        });
-      }
+    const isPasswordValid = await bcrypt.compare(
+      input.password,
+      foundUser.password
+    );
 
-      const isPasswordValid = await bcrypt.compare(
-        input.password,
-        foundUser.password
-      );
-
-      if (!isPasswordValid) {
-        throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Invalid credentials",
-        });
-      }
-
-      const token = jwt.sign(
-        {
-          id: foundUser.id,
-          email: foundUser.email,
-          role: foundUser.role,
-          department: foundUser.department,
-          name: foundUser.name,
-        },
-        JWT_SECRET,
-        { expiresIn: "7d" }
-      );
-
-      // Set cookie
-      const cookieStore = await cookies();
-      cookieStore.set("auth_token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 7,
+    if (!isPasswordValid) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Invalid credentials",
       });
+    }
 
-      return {
-        success: true,
-        user: {
-          id: foundUser.id,
-          name: foundUser.name,
-          email: foundUser.email,
-          role: foundUser.role,
-          department: foundUser.department,
-        },
-      };
-    }),
+    const token = jwt.sign(
+      {
+        id: foundUser.id,
+        email: foundUser.email,
+        role: foundUser.role,
+        department: foundUser.department,
+        name: foundUser.name,
+      },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // Set cookie
+    const cookieStore = await cookies();
+    cookieStore.set("auth_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    });
+
+    return {
+      success: true,
+      user: {
+        id: foundUser.id,
+        name: foundUser.name,
+        email: foundUser.email,
+        role: foundUser.role,
+        department: foundUser.department,
+      },
+    };
+  }),
 
   user: baseProcedure.query(async () => {
     const cookieStore = await cookies(); // no need for await here
