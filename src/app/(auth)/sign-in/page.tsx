@@ -22,16 +22,13 @@ import { Input } from "@/components/ui/input";
 import { Loader2, Eye, EyeOff, Building } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { LoginFormData, loginSchema } from "@/schema/auth";
-import { useUserStore } from "@/store/user";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-interface LoginFormProps {
-  onToggleMode: () => void;
-}
-
-export default function LoginForm({ onToggleMode }: LoginFormProps) {
+export default function LoginForm() {
+  const router = useRouter();
   const { signIn: login, isLoading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const setUser = useUserStore((state) => state.setUser);
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -52,19 +49,29 @@ export default function LoginForm({ onToggleMode }: LoginFormProps) {
       <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
       <div className="relative w-full max-w-md">
         {/* University Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-4">
+        <div className="flex flex-col items-center justify-center ">
+          {/* <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-4">
             <Building className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">UFMS Portal</h1>
           <p className="text-gray-600">
             University Financial Management System
-          </p>
+          </p> */}
+          <Image
+            src="/images/logo.jpg"
+            alt="UFMS Logo"
+            width={200}
+            height={200}
+            className="mb-4"
+            priority
+          />
         </div>
         <Card className="w-full max-w-md mx-auto shadow-primary">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-            <CardDescription>Sign in to your UFMS account</CardDescription>
+            <CardDescription>
+              Sign in to your Anchor's financial management account
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -139,7 +146,7 @@ export default function LoginForm({ onToggleMode }: LoginFormProps) {
                     type="button"
                     variant="link"
                     className="text-sm"
-                    onClick={onToggleMode}
+                    onClick={() => router.push("/sign-up")}
                     disabled={isLoading}
                   >
                     Don't have an account? Register here

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { trpc } from "@/trpc/client";
 import { useUserStore } from "@/store/user";
+import { User } from "@/types/auth";
 
 type Role = "system_admin" | "finance_officer" | "department_head";
 
@@ -24,6 +25,7 @@ export function useAuth() {
 
   const registerMutation = trpc.auth.register.useMutation();
   const loginMutation = trpc.auth.login.useMutation();
+  const signOutMutation = trpc.auth.signOut.useMutation();
 
   const register = async (data: RegisterData) => {
     setIsLoading(true);
@@ -38,10 +40,10 @@ export function useAuth() {
       });
 
       toast.success("You're now logged in!");
-      setUser(response.user);
+      setUser(response.user as User);
       router.push("/dashboard");
     } catch (error) {
-      console.error("Registration error:", error);
+      //   console.error("Registration error:", error);
       toast.error(
         error instanceof Error ? error.message : "Registration failed"
       );
@@ -54,12 +56,12 @@ export function useAuth() {
     setIsLoading(true);
     try {
       const response = await loginMutation.mutateAsync({ email, password });
-      console.log(response);
-      setUser(response.user);
+      //   console.log(response);
+      setUser(response.user as User);
       toast.success("Signed in successfully!");
       router.push("/dashboard");
     } catch (error) {
-      console.error("Sign in error:", error);
+      //   console.error("Sign in error:", error);
       toast.error(error instanceof Error ? error.message : "Sign in failed");
     } finally {
       setIsLoading(false);
@@ -68,11 +70,9 @@ export function useAuth() {
 
   const signOut = async () => {
     try {
-      await fetch("/api/auth/sign-out", { method: "POST" });
-      toast.success("Signed out!");
-      window.location.href = "/login";
+      await signOutMutation.mutateAsync();
     } catch (error) {
-      console.error("Sign out error:", error);
+      //   console.error("Sign out error:", error);
       toast.error("Sign out failed");
     }
   };

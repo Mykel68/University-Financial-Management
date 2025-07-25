@@ -3,6 +3,11 @@ import { TRPCError } from "@trpc/server";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
 
+import jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
+
+const JWT_SECRET = process.env.JWT_SECRET!;
+
 import { createTRPCRouter, baseProcedure } from "../init";
 import { user } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -50,6 +55,7 @@ export const authRouter = createTRPCRouter({
           name: newUser[0].name,
           email: newUser[0].email,
           role: newUser[0].role,
+          department: newUser[0].department,
         },
       };
     }),
@@ -70,17 +76,17 @@ export const authRouter = createTRPCRouter({
           email: true,
           password: true,
           role: true,
+          department: true,
         },
       });
 
-      //   console.log(user);
       if (!foundUser) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "User not found",
         });
       }
-      //   console.log(user);
+
       const isPasswordValid = await bcrypt.compare(
         input.password,
         foundUser.password
@@ -92,6 +98,29 @@ export const authRouter = createTRPCRouter({
           message: "Invalid credentials",
         });
       }
+
+      const token = jwt.sign(
+        {
+          id: foundUser.id,
+          email: foundUser.email,
+          role: foundUser.role,
+          department: foundUser.department,
+          name: foundUser.name,
+        },
+        JWT_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      // Set cookie
+      const cookieStore = await cookies();
+      cookieStore.set("auth_token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7,
+      });
+
       return {
         success: true,
         user: {
@@ -99,7 +128,49 @@ export const authRouter = createTRPCRouter({
           name: foundUser.name,
           email: foundUser.email,
           role: foundUser.role,
+          department: foundUser.department,
         },
       };
     }),
+
+  user: baseProcedure.query(async () => {
+    const cookieStore = await cookies(); // no need for await here
+    const token = cookieStore.get("auth_token")?.value;
+
+    if (!token) {
+      throw new TRPCError({ code: "UNAUTHORIZED", message: "Not logged in" });
+    }
+
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET) as {
+        id: string;
+        name: string;
+        email: string;
+        role: string;
+        department?: string;
+      };
+
+      return {
+        success: true,
+        user: decoded,
+      };
+    } catch (err) {
+      throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid token" });
+    }
+  }),
+
+  signOut: baseProcedure.mutation(async () => {
+    const cookieStore = await cookies();
+    cookieStore.set("auth_token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 0,
+    });
+
+    return {
+      success: true,
+    };
+  }),
 });

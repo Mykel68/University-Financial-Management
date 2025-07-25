@@ -30,12 +30,11 @@ import {
 import { Loader2, Eye, EyeOff, Building } from "lucide-react";
 import { RegisterFormData, registerSchema } from "@/schema/auth";
 import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
-interface RegisterFormProps {
-  onToggleMode: () => void;
-}
-
-export default function RegisterForm({ onToggleMode }: RegisterFormProps) {
+export default function RegisterForm() {
+  const router = useRouter();
   const { register, isLoading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -68,19 +67,29 @@ export default function RegisterForm({ onToggleMode }: RegisterFormProps) {
       <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
       <div className="relative w-full max-w-md">
         {/* University Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full mb-4">
+        <div className="flex flex-col items-center justify-center">
+          {/* <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full mb-4">
             <Building className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Join UFMS</h1>
           <p className="text-gray-600">
             Create your financial management account
-          </p>
+          </p> */}
+          <Image
+            src="/images/logo.jpg"
+            alt="UFMS Logo"
+            width={200}
+            height={200}
+            className="mb-4"
+            priority
+          />
         </div>
         <Card className="w-full max-w-md mx-auto shadow-primary">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
-            <CardDescription>Register for UFMS access</CardDescription>
+            <CardDescription>
+              Register for financial management access
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -156,7 +165,7 @@ export default function RegisterForm({ onToggleMode }: RegisterFormProps) {
                         disabled={isLoading}
                       >
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select your role" />
                           </SelectTrigger>
                         </FormControl>
@@ -285,7 +294,7 @@ export default function RegisterForm({ onToggleMode }: RegisterFormProps) {
                     type="button"
                     variant="link"
                     className="text-sm"
-                    onClick={onToggleMode}
+                    onClick={() => router.push("/sign-in")}
                     disabled={isLoading}
                   >
                     Already have an account? Sign in here

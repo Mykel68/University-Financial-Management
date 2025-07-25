@@ -12,7 +12,7 @@ export default function Page() {
   const renderDashboard = () => {
     if (!user) return null;
 
-    console.log("user", user);
+    // console.log("user", user);
 
     switch (user.role) {
       case "system_admin":

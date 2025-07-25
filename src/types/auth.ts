@@ -6,13 +6,10 @@ export enum UserRole {
 
 export interface User {
   id: string;
+  name: string;
   email: string;
-  firstName: string;
-  lastName: string;
   role: UserRole;
   department?: string;
-  createdAt: Date;
-  lastLogin?: Date;
 }
 
 export interface AuthState {

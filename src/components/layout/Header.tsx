@@ -13,9 +13,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { LogOut, User, Settings } from "lucide-react";
 import { useUserStore } from "@/store/user";
+import { useAuth } from "@/hooks/use-auth";
 
 export function Header() {
   const { user } = useUserStore();
+  const { signOut } = useAuth();
 
   if (!user) return <>No User</>;
 
@@ -96,10 +98,7 @@ export function Header() {
                 <span>Settings</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                //    onClick={logout}
-                className="text-destructive"
-              >
+              <DropdownMenuItem onClick={signOut} className="text-destructive">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>
               </DropdownMenuItem>
