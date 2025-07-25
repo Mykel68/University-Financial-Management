@@ -2,6 +2,7 @@ import { useState } from "react";
 import { trpc } from "@/trpc/client";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type Role = "system_admin" | "finance_officer" | "department_head";
 
@@ -15,6 +16,7 @@ interface RegisterData {
 }
 
 export function useAuth() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const registerMutation = trpc.auth.register.useMutation();
 
@@ -37,7 +39,8 @@ export function useAuth() {
       toast.success("Account created successfully! You are now logged in.");
 
       // Redirect or handle success
-      window.location.href = "/dashboard"; // or use your preferred routing method
+      //   window.location.href = "/dashboard"; // or use your preferred routing method
+      router.push("/dashboard");
     } catch (error) {
       console.error("Registration error:", error);
       toast.error(
@@ -62,7 +65,8 @@ export function useAuth() {
       }
 
       toast.success("Signed in successfully!");
-      window.location.href = "/dashboard";
+      //   window.location.href = "/dashboard";
+      router.push("/dashboard");
     } catch (error) {
       console.error("Sign in error:", error);
       toast.error(error instanceof Error ? error.message : "Sign in failed");
