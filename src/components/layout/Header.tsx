@@ -12,10 +12,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 
-import { LogOut, User, Settings } from "lucide-react";
+import { LogOut, User, Settings, Sun, Moon } from "lucide-react";
 import { useUserStore } from "@/store/user";
 import { useAuth } from "@/hooks/use-auth";
 import Image from "next/image";
+import { useTheme } from "next-themes";
 
 export function Header() {
   const { user } = useUserStore();
@@ -54,6 +55,8 @@ export function Header() {
     const lastName = name.split(" ")[1];
     return firstName.charAt(0) + lastName.charAt(0);
   };
+
+  const { theme, setTheme } = useTheme();
 
   return (
     <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
@@ -108,6 +111,22 @@ export function Header() {
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              >
+                {theme === "dark" ? (
+                  <>
+                    <Sun className="mr-2 h-4 w-4" />
+                    <span>Switch to Light Mode</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon className="mr-2 h-4 w-4" />
+                    <span>Switch to Dark Mode</span>
+                  </>
+                )}
+              </DropdownMenuItem>
+
               <DropdownMenuItem>
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>

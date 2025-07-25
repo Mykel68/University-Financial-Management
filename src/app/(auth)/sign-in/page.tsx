@@ -19,7 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Loader2, Eye, EyeOff, Building } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { LoginFormData, loginSchema } from "@/schema/auth";
 import Image from "next/image";
@@ -45,7 +45,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-blue-900 dark:via-purple-900 dark:to-purple-900 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
       <div className="relative w-full max-w-md">
         {/* University Header */}
@@ -70,7 +70,7 @@ export default function LoginForm() {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
             <CardDescription>
-              Sign in to your Anchor's financial management account
+              Sign in to Anchor's financial management account
             </CardDescription>
           </CardHeader>
           <CardContent>

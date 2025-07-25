@@ -63,7 +63,7 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-purple-900 dark:via-purple-900 dark:to-blue-900 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
       <div className="relative w-full max-w-md">
         {/* University Header */}
