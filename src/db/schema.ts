@@ -22,6 +22,16 @@ export const user = pgTable("user", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const budget = pgTable("budget", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  amount: integer("amount").notNull(),
+  department: text("department"),
+  userId: text("user_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // export const usersTable = pgTable("users", {
 //   id: integer().primaryKey().generatedAlwaysAsIdentity(),
 //   name: varchar({ length: 255 }).notNull(),

@@ -9,7 +9,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { DollarSign, FileText, Clock, CheckCircle } from "lucide-react";
+import {
+  DollarSign,
+  FileText,
+  Clock,
+  CheckCircle,
+  PlusCircle,
+} from "lucide-react";
 import { useUserStore } from "@/store/user";
 import {
   Dialog,
@@ -21,9 +27,22 @@ import {
 } from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BudgetFormData, budgetSchema } from "@/schema/budget";
-import { Label } from "@/components/ui/label";
+import {
+  budgetFormSchema,
+  BudgetFormValues,
+  BudgetPayload,
+  budgetSchema,
+} from "@/schema/budget";
 import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useBudget } from "@/hooks/budget";
 
 export function DepartmentHeadDashboard() {
   const { user } = useUserStore();
@@ -104,7 +123,10 @@ export function DepartmentHeadDashboard() {
           </Button> */}
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="default">New Budget</Button>
+              <Button variant="default">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                New Budget
+              </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -216,46 +238,66 @@ export function DepartmentHeadDashboard() {
 }
 
 const BudgetForm = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<BudgetFormData>({
-    resolver: zodResolver(budgetSchema),
+  const { user } = useUserStore();
+  const form = useForm<BudgetFormValues>({
+    resolver: zodResolver(budgetFormSchema),
     defaultValues: {
       title: "",
-      amount: 0,
+      amount: "",
+      userId: user?.id ?? "",
+      department: user?.department ?? "",
     },
   });
 
-  const onSubmit = (data: BudgetFormData) => {
-    console.log("Budget created:", data);
-    // Call your API here
-    reset();
+  const { createBudget, isLoading } = useBudget();
+
+  const onSubmit = (data: BudgetFormValues) => {
+    const parsed = budgetSchema.parse(data); // amount becomes number here ✅
+    createBudget(parsed); // API receives correct shape
+    form.reset();
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="title">Title</Label>
-        <Input id="title" {...register("title")} />
-        {errors.title && (
-          <p className="text-sm text-destructive">{errors.title.message}</p>
-        )}
-      </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Project Title</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="e.g. Research Grant"
+                  {...field}
+                  disabled={isLoading}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <div className="space-y-2">
-        <Label htmlFor="amount">Amount (₦)</Label>
-        <Input id="amount" type="number" {...register("amount")} />
-        {errors.amount && (
-          <p className="text-sm text-destructive">{errors.amount.message}</p>
-        )}
-      </div>
+        <FormField
+          control={form.control}
+          name="amount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Amount (₦)</FormLabel>
+              <FormControl>
+                <Input type="number" {...field} disabled={isLoading} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <DialogFooter>
-        <Button type="submit">Create</Button>
-      </DialogFooter>
-    </form>
+        <DialogFooter>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Creating..." : "Create Budget"}
+          </Button>
+        </DialogFooter>
+      </form>
+    </Form>
   );
 };
