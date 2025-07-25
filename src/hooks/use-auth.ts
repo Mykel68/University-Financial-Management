@@ -2,7 +2,10 @@ import { useState } from "react";
 import { trpc } from "@/trpc/client";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+
 import { useRouter } from "next/navigation";
+
+import { trpc } from "@/trpc/client";
 
 type Role = "system_admin" | "finance_officer" | "department_head";
 
@@ -40,6 +43,9 @@ export function useAuth() {
 
       // Redirect or handle success
       //   window.location.href = "/dashboard"; // or use your preferred routing method
+
+      toast.success("You're now logged in!");
+
       router.push("/dashboard");
     } catch (error) {
       console.error("Registration error:", error);
@@ -65,7 +71,9 @@ export function useAuth() {
       }
 
       toast.success("Signed in successfully!");
+
       //   window.location.href = "/dashboard";
+
       router.push("/dashboard");
     } catch (error) {
       console.error("Sign in error:", error);
