@@ -92,14 +92,13 @@ export const authRouter = createTRPCRouter({
           message: "Invalid credentials",
         });
       }
-
       return {
         success: true,
         user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
+          id: foundUser.id,
+          name: foundUser.name,
+          email: foundUser.email,
+          role: foundUser.role,
         },
       };
     }),
