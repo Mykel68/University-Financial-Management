@@ -9,15 +9,21 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import {
-  PlusCircle,
-  DollarSign,
-  FileText,
-  Clock,
-  CheckCircle,
-} from "lucide-react";
-// import { useAuth } from "@/contexts/AuthContext";
+import { DollarSign, FileText, Clock, CheckCircle } from "lucide-react";
 import { useUserStore } from "@/store/user";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { BudgetFormData, budgetSchema } from "@/schema/budget";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 export function DepartmentHeadDashboard() {
   const { user } = useUserStore();
@@ -92,10 +98,22 @@ export function DepartmentHeadDashboard() {
         </div>
         <div className="flex items-center space-x-2">
           <Badge variant="secondary">Department Head</Badge>
-          <Button>
+          {/* <Button>
             <PlusCircle className="mr-2 h-4 w-4" />
             New Request
-          </Button>
+          </Button> */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="default">New Budget</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create New Budget</DialogTitle>
+              </DialogHeader>
+
+              <BudgetForm />
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -196,3 +214,48 @@ export function DepartmentHeadDashboard() {
     </div>
   );
 }
+
+const BudgetForm = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<BudgetFormData>({
+    resolver: zodResolver(budgetSchema),
+    defaultValues: {
+      title: "",
+      amount: 0,
+    },
+  });
+
+  const onSubmit = (data: BudgetFormData) => {
+    console.log("Budget created:", data);
+    // Call your API here
+    reset();
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="title">Title</Label>
+        <Input id="title" {...register("title")} />
+        {errors.title && (
+          <p className="text-sm text-destructive">{errors.title.message}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="amount">Amount (₦)</Label>
+        <Input id="amount" type="number" {...register("amount")} />
+        {errors.amount && (
+          <p className="text-sm text-destructive">{errors.amount.message}</p>
+        )}
+      </div>
+
+      <DialogFooter>
+        <Button type="submit">Create</Button>
+      </DialogFooter>
+    </form>
+  );
+};

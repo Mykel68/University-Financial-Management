@@ -11,6 +11,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import { LogOut, User, Settings } from "lucide-react";
 import { useUserStore } from "@/store/user";
 import { useAuth } from "@/hooks/use-auth";
@@ -19,7 +33,7 @@ export function Header() {
   const { user } = useUserStore();
   const { signOut } = useAuth();
 
-  if (!user) return <>No User</>;
+  if (!user) return null;
 
   const getRoleLabel = (role: string) => {
     switch (role) {
