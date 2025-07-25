@@ -30,10 +30,12 @@ import { testimonials } from "@/constants/testimonials";
 import { stats } from "@/constants/stats";
 import { features } from "@/constants/features";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const SchoolFinanceLandingPage = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -61,7 +63,9 @@ const SchoolFinanceLandingPage = () => {
                 />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-slate-800">EduFinance</h1>
+                <h1 className="text-xl font-bold text-slate-800">
+                  Anchor University
+                </h1>
                 <p className="text-xs text-slate-500 hidden sm:block">
                   School Financial Management
                 </p>
@@ -76,7 +80,7 @@ const SchoolFinanceLandingPage = () => {
               >
                 Features
               </a>
-              <a
+              {/* <a
                 href="#pricing"
                 className="text-slate-600 hover:text-slate-800 transition-colors"
               >
@@ -93,12 +97,18 @@ const SchoolFinanceLandingPage = () => {
                 className="text-slate-600 hover:text-slate-800 transition-colors"
               >
                 Contact
-              </a>
-              <button className="text-slate-600 hover:text-slate-800 transition-colors">
+              </a> */}
+              <button
+                onClick={() => router.push("/sign-in")}
+                className="text-slate-600 hover:text-slate-800 cursor-pointer transition-colors"
+              >
                 Sign In
               </button>
-              <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl">
-                Get Started
+              <button
+                onClick={() => router.push("/sign-up")}
+                className="bg-gradient-to-r cursor-pointer from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                Sign Up
               </button>
             </div>
 
@@ -126,7 +136,7 @@ const SchoolFinanceLandingPage = () => {
               >
                 Features
               </a>
-              <a
+              {/* <a
                 href="#pricing"
                 className="block text-slate-600 hover:text-slate-800"
               >
@@ -143,7 +153,7 @@ const SchoolFinanceLandingPage = () => {
                 className="block text-slate-600 hover:text-slate-800"
               >
                 Contact
-              </a>
+              </a> */}
               <div className="pt-4 border-t border-slate-200 space-y-2">
                 <button className="w-full text-left text-slate-600 hover:text-slate-800">
                   Sign In
@@ -164,23 +174,27 @@ const SchoolFinanceLandingPage = () => {
             <div>
               <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-6">
                 <Award className="w-4 h-4 mr-2" />
-                Trusted by 500+ Schools Worldwide
+                FINANCIAL MANAGEMENT SYSTEM
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-6">
-                Streamline Your School's
+                Anchor's
                 <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   {" "}
                   Financial Operations
                 </span>
               </h1>
               <p className="text-xl text-slate-600 mb-8 leading-relaxed">
-                Comprehensive financial management system designed specifically
-                for educational institutions. Automate billing, track budgets,
-                and gain insights with powerful analytics.
+                Everything your school needs to manage finances smoothly—from
+                billing to budgeting—with powerful insights to help you make the
+                right decisions every time.
               </p>
+
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold flex items-center justify-center">
-                  Start Free Trial
+                <button
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold flex items-center justify-center"
+                  onClick={() => router.push("/sign-in")}
+                >
+                  Login
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </button>
                 <button className="bg-white text-slate-700 px-8 py-4 rounded-lg border-2 border-slate-200 hover:border-slate-300 transition-colors font-semibold flex items-center justify-center">
@@ -191,15 +205,15 @@ const SchoolFinanceLandingPage = () => {
               <div className="flex items-center space-x-6 text-sm text-slate-600">
                 <div className="flex items-center">
                   <CheckCircle className="w-4 h-4 text-emerald-500 mr-2" />
-                  30-day free trial
+                  Fully customized
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-4 h-4 text-emerald-500 mr-2" />
-                  No setup fees
+                  Secure and school-owned data
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-4 h-4 text-emerald-500 mr-2" />
-                  Cancel anytime
+                  Built to grow
                 </div>
               </div>
             </div>
@@ -299,7 +313,7 @@ const SchoolFinanceLandingPage = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 bg-white">
+      {/* <section id="testimonials" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
@@ -344,7 +358,6 @@ const SchoolFinanceLandingPage = () => {
               </div>
             </div>
 
-            {/* Testimonial Navigation Dots */}
             <div className="flex justify-center mt-8 space-x-2">
               {testimonials.map((_, index) => (
                 <button
@@ -360,10 +373,10 @@ const SchoolFinanceLandingPage = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+      {/* <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
             Ready to Transform Your School's Finances?
@@ -384,7 +397,7 @@ const SchoolFinanceLandingPage = () => {
             No credit card required • Setup in under 10 minutes
           </p>
         </div>
-      </section>
+      </section> */}
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-16">
@@ -393,9 +406,19 @@ const SchoolFinanceLandingPage = () => {
             <div className="md:col-span-1">
               <div className="flex items-center space-x-2 mb-4">
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <GraduationCap className="w-5 h-5 text-white" />
+                  {/* <GraduationCap className="w-5 h-5 text-white" />
+                   */}
+                  <Image
+                    src="/images/logo-.png"
+                    alt="UFMS Logo"
+                    width={200}
+                    height={200}
+                    priority
+                  />
                 </div>
-                <span className="text-xl font-bold text-white">EduFinance</span>
+                <span className="text-xl font-bold text-white">
+                  Anchor University
+                </span>
               </div>
               <p className="text-slate-400 mb-4">
                 Empowering schools with intelligent financial management
