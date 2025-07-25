@@ -249,7 +249,7 @@ const BudgetForm = () => {
     },
   });
 
-  const { createBudget, isCreating } = useBudget();
+  const { createBudget, isLoading } = useBudget();
 
   const onSubmit = (data: BudgetFormValues) => {
     const parsed = budgetSchema.parse(data); // amount becomes number here ✅
@@ -270,7 +270,7 @@ const BudgetForm = () => {
                 <Input
                   placeholder="e.g. Research Grant"
                   {...field}
-                  disabled={isCreating}
+                  disabled={isLoading}
                 />
               </FormControl>
               <FormMessage />
@@ -285,7 +285,7 @@ const BudgetForm = () => {
             <FormItem>
               <FormLabel>Amount (₦)</FormLabel>
               <FormControl>
-                <Input type="number" {...field} disabled={isCreating} />
+                <Input type="number" {...field} disabled={isLoading} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -293,8 +293,8 @@ const BudgetForm = () => {
         />
 
         <DialogFooter>
-          <Button type="submit" disabled={isCreating}>
-            {isCreating ? "Creating..." : "Create Budget"}
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Creating..." : "Create Budget"}
           </Button>
         </DialogFooter>
       </form>

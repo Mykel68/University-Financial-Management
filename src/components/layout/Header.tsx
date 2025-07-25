@@ -11,23 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 import { LogOut, User, Settings } from "lucide-react";
 import { useUserStore } from "@/store/user";
 import { useAuth } from "@/hooks/use-auth";
+import Image from "next/image";
 
 export function Header() {
   const { user } = useUserStore();
@@ -61,11 +49,24 @@ export function Header() {
     }
   };
 
+  const getInitials = (name: string) => {
+    const firstName = name.split(" ")[0];
+    const lastName = name.split(" ")[1];
+    return firstName.charAt(0) + lastName.charAt(0);
+  };
+
   return (
     <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <h1 className="text-xl font-bold text-primary">UFMS</h1>
+          {/* <h1 className="text-xl font-bold text-primary">UFMS</h1> */}
+          <Image
+            src="/images/logo.jpg"
+            alt="Logo"
+            width={400}
+            height={400}
+            className="w-full h-16"
+          />
           <Badge variant={getRoleBadgeVariant(user.role) as any}>
             {getRoleLabel(user.role)}
           </Badge>
@@ -85,7 +86,7 @@ export function Header() {
               >
                 <Avatar className="h-10 w-10">
                   <AvatarFallback className="bg-primary text-primary-foreground">
-                    {user.name}
+                    {getInitials(user.name)}
                   </AvatarFallback>
                 </Avatar>
               </Button>
