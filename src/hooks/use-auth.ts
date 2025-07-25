@@ -2,11 +2,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-
-import { useRouter } from "next/navigation";
-
 import { trpc } from "@/trpc/client";
-
+import { useUserStore } from "@/store/user";
 
 type Role = "system_admin" | "finance_officer" | "department_head";
 
@@ -23,6 +20,8 @@ export function useAuth() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
+  const setUser = useUserStore((state) => state.setUser);
+
   const registerMutation = trpc.auth.register.useMutation();
   const loginMutation = trpc.auth.login.useMutation();
 
@@ -33,23 +32,13 @@ export function useAuth() {
 
       toast.success("Account created! Logging you in...");
 
-      await loginMutation.mutateAsync({
+      const response = await loginMutation.mutateAsync({
         email: data.email,
         password: data.password,
       });
 
-
-      if (signInResult.error) {
-        throw new Error(signInResult.error.message);
-      }
-
-      toast.success("Account created successfully! You are now logged in.");
-
-      // Redirect or handle success
-      //   window.location.href = "/dashboard"; // or use your preferred routing method
-
       toast.success("You're now logged in!");
-
+      setUser(response.user);
       router.push("/dashboard");
     } catch (error) {
       console.error("Registration error:", error);
@@ -64,11 +53,10 @@ export function useAuth() {
   const signIn = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      await loginMutation.mutateAsync({ email, password });
+      const response = await loginMutation.mutateAsync({ email, password });
+      console.log(response);
+      setUser(response.user);
       toast.success("Signed in successfully!");
-
-      //   window.location.href = "/dashboard";
-
       router.push("/dashboard");
     } catch (error) {
       console.error("Sign in error:", error);

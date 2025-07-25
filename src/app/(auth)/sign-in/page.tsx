@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2, Eye, EyeOff, Building } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { LoginFormData, loginSchema } from "@/schema/auth";
+import { useUserStore } from "@/store/user";
 
 interface LoginFormProps {
   onToggleMode: () => void;
@@ -30,6 +31,7 @@ interface LoginFormProps {
 export default function LoginForm({ onToggleMode }: LoginFormProps) {
   const { signIn: login, isLoading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const setUser = useUserStore((state) => state.setUser);
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -41,6 +43,8 @@ export default function LoginForm({ onToggleMode }: LoginFormProps) {
 
   const onSubmit = async (data: LoginFormData) => {
     await login(data.email, data.password);
+
+    // setUser(response);
   };
 
   return (
