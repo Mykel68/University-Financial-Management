@@ -1,6 +1,5 @@
 "use client";
 
-import { Header } from "@/components/layout/Header";
 import React from "react";
 import { SystemAdminDashboard } from "./_ui/SystemAdminDashboard";
 import { FinanceOfficerDashboard } from "./_ui/FinanceOfficerDashbaord";

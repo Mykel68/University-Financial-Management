@@ -20,28 +20,43 @@ import { Home } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
+import { useUserStore } from "@/store/user";
+import { baseNav, roleBasedNav } from "@/constants/sidebar";
+import { usePathname } from "next/navigation";
+
+interface NavItemProps {
+  href: string;
+  icon: any;
+  children: React.ReactNode;
+  active?: boolean;
+}
 
 export default function Sidebar() {
+  const pathname = usePathname();
+  const { user } = useUserStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  if (!user) return null;
+  const currentRoleNav = roleBasedNav[user?.role] || [];
+
+  const combinedNav = [...baseNav, ...currentRoleNav];
 
   function handleNavigation() {
     setIsMobileMenuOpen(false);
   }
 
-  function NavItem({
-    href,
-    icon: Icon,
-    children,
-  }: {
-    href: string;
-    icon: any;
-    children: React.ReactNode;
-  }) {
+  const isActive = (href: string) => pathname === href;
+
+  function NavItem({ href, icon: Icon, children, active }: NavItemProps) {
     return (
       <Link
         href={href}
         onClick={handleNavigation}
-        className="flex items-center px-3 py-2 text-sm rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-[#1F1F23]"
+        className={` flex items-center px-3 py-2 text-sm rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-[#1F1F23] ${
+          active
+            ? "bg-purple-700 text-purple-50 dark:bg-purple-900 dark:text-purple-50"
+            : ""
+        }`}
       >
         <Icon className="h-4 w-4 mr-3 flex-shrink-0" />
         {children}
@@ -72,7 +87,7 @@ export default function Sidebar() {
             rel="noopener noreferrer"
             className="h-16 px-6 flex items-center border-b border-gray-200 dark:border-[#1F1F23]"
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 w-26">
               <Image
                 src="/images/logo.jpg"
                 alt="Acme"
@@ -99,7 +114,7 @@ export default function Sidebar() {
                 <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                   Overview
                 </div>
-                <div className="space-y-1">
+                {/* <div className="space-y-1">
                   <NavItem href="#" icon={Home}>
                     Dashboard
                   </NavItem>
@@ -112,10 +127,22 @@ export default function Sidebar() {
                   <NavItem href="#" icon={Folder}>
                     Projects
                   </NavItem>
+                </div> */}
+                <div className="space-y-1">
+                  {combinedNav.map((item) => (
+                    <NavItem
+                      key={item.href}
+                      href={item.href}
+                      icon={item.icon}
+                      active={isActive(item.href)}
+                    >
+                      {item.label}
+                    </NavItem>
+                  ))}
                 </div>
               </div>
 
-              <div>
+              {/* <div>
                 <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                   Finance
                 </div>
@@ -130,9 +157,9 @@ export default function Sidebar() {
                     Payments
                   </NavItem>
                 </div>
-              </div>
+              </div> */}
 
-              <div>
+              {/* <div>
                 <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                   Team
                 </div>
@@ -150,7 +177,7 @@ export default function Sidebar() {
                     Meetings
                   </NavItem>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 
