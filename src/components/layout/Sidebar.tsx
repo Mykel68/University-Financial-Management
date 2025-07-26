@@ -87,7 +87,7 @@ export default function Sidebar() {
             rel="noopener noreferrer"
             className="h-16 px-6 flex items-center border-b border-gray-200 dark:border-[#1F1F23]"
           >
-            <div className="flex items-center gap-2 w-26">
+            <div className="flex items-center gap-2 w-24 p-1">
               <Image
                 src="/images/logo.jpg"
                 alt="Acme"

@@ -25,7 +25,7 @@ type RoleNavConfig = {
 
 export const baseNav: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: Home },
-  { label: "Settings", href: "/settings", icon: Settings },
+  //   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
 export const roleBasedNav: RoleNavConfig = {
