@@ -31,6 +31,7 @@ import { BudgetRequestForm } from "./_ui/BudgetRequest";
 import { BudgetStats } from "./_ui/BudgetStats";
 import { BudgetFilters } from "./_ui/BudgetFilters";
 import { trpc } from "@/trpc/client";
+import { useBudget } from "@/hooks/budget";
 
 interface BudgetRequest {
   id: string;
@@ -98,6 +99,7 @@ const mockBudgetRequests: BudgetRequest[] = [
 
 const Budget = () => {
   const { data, isLoading, error } = trpc.budget.budgetOverview.useQuery();
+  const { handleApprove, handleReject, handleReview } = useBudget();
   //   const [requests, setRequests] = useState<BudgetRequest[]>(mockBudgetRequests);
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterDepartment, setFilterDepartment] = useState<string>("all");
@@ -123,27 +125,6 @@ const Budget = () => {
       description: budget.title, // Replace with actual description if available
       priority: "medium", // Replace with actual priority if available
     })) || [];
-
-  const handleApprove = (id: string) => {
-    trpc.budget.approveBudget.mutate({ id });
-  };
-
-  const handleReject = (id: string) => {
-    trpc.budget.rejectBudget.mutate({ id });
-  };
-
-  const handleReview = (id: string) => {
-    // Assuming a custom mutation for setting under_review
-    // You may need to add this to budgetRouter if not already present
-    trpc.budget.updateBudget.mutate({
-      id,
-      status: "under_review", // Adjust based on your schema
-      title: requests.find((r) => r.id === id)?.title || "",
-      amount: requests.find((r) => r.id === id)?.amount || 0,
-      userId: requests.find((r) => r.id === id)?.submittedBy || "",
-      department: requests.find((r) => r.id === id)?.department || "",
-    });
-  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
