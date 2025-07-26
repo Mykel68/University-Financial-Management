@@ -91,15 +91,15 @@ export default function Sidebar() {
               <Image
                 src="/images/logo.jpg"
                 alt="Acme"
-                width={44}
-                height={32}
+                width={200}
+                height={200}
                 className="flex-shrink-0 w-full hidden dark:block"
               />
               <Image
                 src="/images/logo.jpg"
                 alt="Acme"
-                width={44}
-                height={32}
+                width={200}
+                height={200}
                 className="flex-shrink-0 w-full block dark:hidden"
               />
               {/* <span className="text-lg font-semibold hover:cursor-pointer text-gray-900 dark:text-white">
