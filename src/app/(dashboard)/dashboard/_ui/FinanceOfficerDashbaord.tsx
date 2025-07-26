@@ -80,16 +80,16 @@ export function FinanceOfficerDashboard() {
     > = {};
 
     for (const b of budgets) {
-      if (!grouped[b.department]) {
-        grouped[b.department] = {
-          name: b.department,
+      if (!grouped[b.department!]) {
+        grouped[b.department!] = {
+          name: b.department!,
           allocated: 0,
           spent: 0,
         };
       }
 
-      grouped[b.department].allocated += b.amount;
-      grouped[b.department].spent += b.spent ?? 0;
+      grouped[b.department!].allocated += b.amount;
+      grouped[b.department!].spent += b.spent ?? 0;
     }
 
     return Object.values(grouped);

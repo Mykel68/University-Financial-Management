@@ -27,6 +27,7 @@ export const budget = pgTable("budget", {
   title: text("title").notNull(),
   amount: integer("amount").notNull(),
   department: text("department"),
+  spent: integer("spent").notNull(),
   userId: text("user_id").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

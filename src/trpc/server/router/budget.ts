@@ -16,6 +16,7 @@ export const budgetRouter = createTRPCRouter({
           amount: input.amount,
           userId: input.userId,
           department: input.department,
+          spent: 0,
         })
         .returning();
 
