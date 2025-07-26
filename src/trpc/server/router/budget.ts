@@ -25,7 +25,9 @@ export const budgetRouter = createTRPCRouter({
 
   // ✅ Get all budgets
   getBudgets: baseProcedure.query(async ({ ctx }) => {
-    return await ctx.db.query.budget.findMany();
+    return await ctx.db.query.budget.findMany({
+      where: (budget, { eq }) => eq(budget.isApproved, true),
+    });
   }),
 
   // ✅ Get budgets by department
@@ -33,7 +35,11 @@ export const budgetRouter = createTRPCRouter({
     .input(z.object({ department: z.string() }))
     .query(async ({ ctx, input }) => {
       return await ctx.db.query.budget.findMany({
-        where: (budget, { eq }) => eq(budget.department, input.department),
+        where: (budget, { eq, and }) =>
+          and(
+            eq(budget.department, input.department),
+            eq(budget.isApproved, true)
+          ),
       });
     }),
 });

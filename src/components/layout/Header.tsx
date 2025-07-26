@@ -17,44 +17,17 @@ import { useUserStore } from "@/store/user";
 import { useAuth } from "@/hooks/use-auth";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+import {
+  getInitials,
+  getRoleBadgeVariant,
+  getRoleLabel,
+} from "@/helpers/utils";
 
 export function Header() {
   const { user } = useUserStore();
   const { signOut } = useAuth();
 
   if (!user) return null;
-
-  const getRoleLabel = (role: string) => {
-    switch (role) {
-      case "system_admin":
-        return "System Administrator";
-      case "finance_officer":
-        return "Finance Officer";
-      case "department_head":
-        return "Department Head";
-      default:
-        return role;
-    }
-  };
-
-  const getRoleBadgeVariant = (role: string) => {
-    switch (role) {
-      case "system_admin":
-        return "destructive";
-      case "finance_officer":
-        return "default";
-      case "department_head":
-        return "secondary";
-      default:
-        return "secondary";
-    }
-  };
-
-  const getInitials = (name: string) => {
-    const firstName = name.split(" ")[0];
-    const lastName = name.split(" ")[1];
-    return firstName.charAt(0) + lastName.charAt(0);
-  };
 
   const { theme, setTheme } = useTheme();
 
@@ -101,7 +74,7 @@ export function Header() {
                   <p className="text-xs text-muted-foreground">{user.email}</p>
                   {user.department && (
                     <p className="text-xs text-muted-foreground">
-                      {user.department}
+                      {getRoleLabel(user.role)}
                     </p>
                   )}
                 </div>
