@@ -8,12 +8,12 @@ import {
 } from "lucide-react";
 
 export const features = [
-  {
-    icon: CreditCard,
-    title: "Smart Payment Processing",
-    description:
-      "Automated billing, payment tracking, and multiple payment options for students and parents.",
-  },
+  // {
+  //   icon: CreditCard,
+  //   title: "Smart Payment Processing",
+  //   description:
+  //     "Automated billing, payment tracking, and multiple payment options for students and parents.",
+  // },
   {
     icon: PieChart,
     title: "Budget Management",
