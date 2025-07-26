@@ -257,7 +257,7 @@ const Budget = () => {
                         </div>
                       </TableCell>
                       <TableCell className="font-medium">
-                        ${request.amount.toLocaleString()}
+                        &#8358;{request.amount.toLocaleString()}
                       </TableCell>
                       <TableCell>
                         {getPriorityBadge(request.priority)}

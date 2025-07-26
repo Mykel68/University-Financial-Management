@@ -38,7 +38,7 @@ export const BudgetStats = ({ requests }: BudgetStatsProps) => {
       title: "Total Budget Requests",
       value: totalRequests.toString(),
       icon: DollarSign,
-      description: `$${totalAmount.toLocaleString()} total requested`,
+      description: `₦${totalAmount.toLocaleString()} total requested`,
     },
     {
       title: "Pending Approval",
@@ -50,7 +50,7 @@ export const BudgetStats = ({ requests }: BudgetStatsProps) => {
       title: "Approved",
       value: approvedRequests.toString(),
       icon: CheckCircle,
-      description: `$${approvedAmount.toLocaleString()} approved`,
+      description: `₦${approvedAmount.toLocaleString()} approved`,
     },
     {
       title: "Rejected",
