@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Card,
   CardContent,
@@ -16,49 +17,83 @@ import {
   FileText,
   AlertCircle,
 } from "lucide-react";
+import { trpc } from "@/trpc/client"; // ✅ your TRPC client
+import { useMemo } from "react";
 
 export function FinanceOfficerDashboard() {
+  // ✅ Fetch budgets
+  const { data: budgets = [], isLoading } = trpc.budget.getBudgets.useQuery();
+
+  // ✅ Calculate total and spent using memo
+  const financialSummary = useMemo(() => {
+    const total = budgets.reduce((sum, b) => sum + b.amount, 0);
+    const spent = budgets.reduce((sum, b) => sum + (b.spent || 0), 0);
+    const available = total - spent;
+
+    return {
+      total,
+      spent,
+      available,
+      pending: 12, // replace with dynamic logic if available
+    };
+  }, [budgets]);
+
   const financialStats = [
     {
       title: "Total Budget",
-      value: "₦45.2M",
+      value: `₦${(financialSummary.total / 1_000_000).toFixed(1)}M`,
       change: "+12.5%",
       trend: "up",
-      description: "Current fiscal year",
+      description: "All departments",
       icon: DollarSign,
     },
     {
       title: "Expenses YTD",
-      value: "₦28.7M",
+      value: `₦${(financialSummary.spent / 1_000_000).toFixed(1)}M`,
       change: "-3.2%",
       trend: "down",
-      description: "Year to date",
+      description: "Spent so far",
       icon: Calculator,
     },
     {
       title: "Cash Flow",
-      value: "₦16.5M",
+      value: `₦${(financialSummary.available / 1_000_000).toFixed(1)}M`,
       change: "+8.1%",
       trend: "up",
-      description: "Available funds",
+      description: "Available balance",
       icon: TrendingUp,
     },
     {
       title: "Pending Approvals",
-      value: "12",
+      value: `${financialSummary.pending}`,
       change: "new",
       trend: "neutral",
-      description: "Requires attention",
+      description: "Needs review",
       icon: AlertCircle,
     },
   ];
 
-  const budgetCategories = [
-    { name: "Operations", allocated: 25000000, spent: 18500000 },
-    { name: "Infrastructure", allocated: 12000000, spent: 8200000 },
-    { name: "Research", allocated: 8000000, spent: 5100000 },
-    { name: "Administrative", allocated: 3000000, spent: 2800000 },
-  ];
+  const budgetCategories = useMemo(() => {
+    const grouped: Record<
+      string,
+      { name: string; allocated: number; spent: number }
+    > = {};
+
+    for (const b of budgets) {
+      if (!grouped[b.department]) {
+        grouped[b.department] = {
+          name: b.department,
+          allocated: 0,
+          spent: 0,
+        };
+      }
+
+      grouped[b.department].allocated += b.amount;
+      grouped[b.department].spent += b.spent ?? 0;
+    }
+
+    return Object.values(grouped);
+  }, [budgets]);
 
   return (
     <div className="space-y-6">
@@ -74,6 +109,7 @@ export function FinanceOfficerDashboard() {
         <Badge>Finance Officer</Badge>
       </div>
 
+      {/* Financial stats cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {financialStats.map((stat) => {
           const Icon = stat.icon;
