@@ -135,8 +135,11 @@ export default function Profile01({
                                 rounded-lg transition-colors duration-200"
             >
               <div className="flex items-center gap-2" onClick={signOut}>
-                <LogOut className="w-4 h-4" />
-                <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                <LogOut className="w-4 h-4" onClick={signOut} />
+                <span
+                  className="text-sm font-medium text-zinc-900 dark:text-zinc-100"
+                  onClick={signOut}
+                >
                   Logout
                 </span>
               </div>

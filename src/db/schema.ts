@@ -5,7 +5,8 @@ import {
   pgTable,
   text,
   timestamp,
-  varchar,
+  uuid,
+  index,
 } from "drizzle-orm/pg-core";
 
 export const approvalStatusEnum = pgEnum("approval_status", [
@@ -16,31 +17,38 @@ export const approvalStatusEnum = pgEnum("approval_status", [
 ]);
 
 export const user = pgTable("user", {
-  id: text("id").primaryKey(), // UUID
-  name: text("name").notNull(), // firstName + lastName
+  id: uuid("id").primaryKey(),
+  name: text("name").notNull(),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   email: text("email").notNull().unique(),
   role: text("role").notNull(),
   department: text("department"),
   password: text("password").notNull(),
-
   emailVerified: boolean("email_verified").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const budget = pgTable("budget", {
-  id: text("id").primaryKey(),
-  title: text("title").notNull(),
-  amount: integer("amount").notNull(),
-  department: text("department").notNull(),
-  spent: integer("spent").default(0).notNull(),
-  userId: text("user_id").notNull(),
-  isApproved: approvalStatusEnum("is_approved").default("pending"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+export const budget = pgTable(
+  "budget",
+  {
+    id: uuid("id").primaryKey(),
+    title: text("title").notNull(),
+    amount: integer("amount").notNull(),
+    department: text("department").notNull(),
+    spent: integer("spent").default(0).notNull(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => user.id),
+    isApproved: approvalStatusEnum("is_approved").default("pending").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    userIndex: index("user_index").on(table.userId),
+  })
+);
 
 // export const usersTable = pgTable("users", {
 //   id: integer().primaryKey().generatedAlwaysAsIdentity(),

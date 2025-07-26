@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
 import { createTRPCRouter, baseProcedure } from "../init";
-import { budget } from "@/db/schema";
+import { budget, user } from "@/db/schema";
 import { budgetFormSchema, updateBudgetSchema } from "@/schema/budget";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 export const budgetRouter = createTRPCRouter({
   addBudget: baseProcedure
@@ -14,31 +14,28 @@ export const budgetRouter = createTRPCRouter({
         .values({
           id: uuidv4(),
           title: input.title,
-          amount: Number(input.amount), // Ensure it's a number
+          amount: Number(input.amount),
           userId: input.userId,
-          department: input.department ?? "", // fallback if optional
+          department: input.department ?? "",
         })
         .returning();
-
       return newBudget[0];
     }),
 
-  // ✅ Get all budgets
   getApprovedBudgets: baseProcedure.query(async ({ ctx }) => {
     return await ctx.db.query.budget.findMany({
-      where: (budget, { eq }) => eq(budget.isApproved, true),
+      where: (budget, { eq }) => eq(budget.isApproved, "approved"),
     });
   }),
-  // ✅ Get budget by id
+
   getBudgetById: baseProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.db.query.budget.findMany({
+      return await ctx.db.query.budget.findFirst({
         where: (budget, { eq }) => eq(budget.id, input.id),
       });
     }),
 
-  // ✅ Get budget by user
   getUserBudgets: baseProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -47,12 +44,10 @@ export const budgetRouter = createTRPCRouter({
       });
     }),
 
-  // ✅ Get all budgets
   getBudgets: baseProcedure.query(async ({ ctx }) => {
     return await ctx.db.query.budget.findMany();
   }),
 
-  // ✅ Get budgets by department
   getDepartmentBudgets: baseProcedure
     .input(z.object({ department: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -60,12 +55,11 @@ export const budgetRouter = createTRPCRouter({
         where: (budget, { eq, and }) =>
           and(
             eq(budget.department, input.department),
-            eq(budget.isApproved, true)
+            eq(budget.isApproved, "approved")
           ),
       });
     }),
 
-  // ✅ Update budget
   updateBudget: baseProcedure
     .input(updateBudgetSchema)
     .mutation(async ({ ctx, input }) => {
@@ -78,40 +72,52 @@ export const budgetRouter = createTRPCRouter({
           department: input.department,
           updatedAt: new Date(),
         })
-        .where(eq(budget.id, input.id)) // ✅ not a callback
+        .where(eq(budget.id, input.id))
         .returning();
     }),
 
-  // ✅ Delete budget
   deleteBudget: baseProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.db
-        .delete(budget) // ✅ Pass the table directly
-        .where(eq(budget.id, input.id)); // ✅ Use eq directly
+        .delete(budget)
+        .where(eq(budget.id, input.id))
+        .returning();
     }),
-  // ✅ Approve budget
+
   approveBudget: baseProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.db
         .update(budget)
         .set({
-          isApproved: true,
+          isApproved: "approved",
           updatedAt: new Date(),
         })
         .where(eq(budget.id, input.id))
         .returning();
     }),
 
-  // ✅ Reject budget
   rejectBudget: baseProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.db
         .update(budget)
         .set({
-          isApproved: false,
+          isApproved: "rejected",
+          updatedAt: new Date(),
+        })
+        .where(eq(budget.id, input.id))
+        .returning();
+    }),
+
+  setUnderReview: baseProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db
+        .update(budget)
+        .set({
+          isApproved: "under_review",
           updatedAt: new Date(),
         })
         .where(eq(budget.id, input.id))
@@ -119,8 +125,14 @@ export const budgetRouter = createTRPCRouter({
     }),
 
   budgetOverview: baseProcedure.query(async ({ ctx }) => {
-    // Get all budgets
     const allBudgets = await ctx.db.query.budget.findMany({
+      with: {
+        user: {
+          columns: {
+            name: true,
+          },
+        },
+      },
       columns: {
         id: true,
         title: true,
@@ -128,21 +140,33 @@ export const budgetRouter = createTRPCRouter({
         department: true,
         isApproved: true,
         spent: true,
+        createdAt: true,
       },
     });
 
-    // Calculate summary counts
     const total = allBudgets.length;
-    const approved = allBudgets.filter((b) => b.isApproved === true).length;
-    const pending = allBudgets.filter((b) => b.isApproved === null).length;
-    const rejected = allBudgets.filter((b) => b.isApproved === false).length;
+    const approved = allBudgets.filter(
+      (b) => b.isApproved === "approved"
+    ).length;
+    const pending = allBudgets.filter((b) => b.isApproved === "pending").length;
+    const rejected = allBudgets.filter(
+      (b) => b.isApproved === "rejected"
+    ).length;
+    const underReview = allBudgets.filter(
+      (b) => b.isApproved === "under_review"
+    ).length;
 
     return {
       total,
       approved,
       pending,
       rejected,
-      budgets: allBudgets,
+      underReview,
+      budgets: allBudgets.map((b) => ({
+        ...b,
+        submittedBy: b.user.name || "Unknown",
+        submittedDate: b.createdAt || new Date(),
+      })),
     };
   }),
 });

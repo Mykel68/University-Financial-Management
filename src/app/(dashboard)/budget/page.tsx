@@ -118,7 +118,7 @@ const Budget = () => {
           : budget.isApproved === "pending"
           ? "pending"
           : "under_review", // Adjust logic if under_review is stored differently
-      submittedBy: "Unknown", // Replace with actual user data if available
+      submittedBy: budget.user.name, // Replace with actual user data if available
       submittedDate: new Date().toISOString().split("T")[0], // Replace with actual date if available
       description: budget.title, // Replace with actual description if available
       priority: "medium", // Replace with actual priority if available
@@ -262,7 +262,10 @@ const Budget = () => {
                 <TableBody>
                   {filteredRequests.map((request) => (
                     <TableRow key={request.id}>
-                      <TableCell className="font-mono">{request.id}</TableCell>
+                      <TableCell className="font-mono">
+                        {/* make a shorter id */}
+                        {request.id.slice(0, 6)}
+                      </TableCell>
                       <TableCell>{request.department}</TableCell>
                       <TableCell>
                         <div>
