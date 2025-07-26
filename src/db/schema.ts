@@ -29,6 +29,7 @@ export const budget = pgTable("budget", {
   department: text("department"),
   spent: integer("spent").notNull(),
   userId: text("user_id").notNull(),
+  isApproved: boolean("is_approved").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
