@@ -2,21 +2,21 @@ import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
 import { createTRPCRouter, baseProcedure } from "../init";
 import { budget } from "@/db/schema";
-import { budgetSchema } from "@/schema/budget";
+import { budgetFormSchema, updateBudgetSchema } from "@/schema/budget";
+import { eq } from "drizzle-orm";
 
 export const budgetRouter = createTRPCRouter({
   addBudget: baseProcedure
-    .input(budgetSchema)
+    .input(budgetFormSchema)
     .mutation(async ({ ctx, input }) => {
       const newBudget = await ctx.db
         .insert(budget)
         .values({
           id: uuidv4(),
           title: input.title,
-          amount: input.amount,
+          amount: Number(input.amount), // Ensure it's a number
           userId: input.userId,
-          department: input.department,
-          spent: 0,
+          department: input.department ?? "", // fallback if optional
         })
         .returning();
 
@@ -67,7 +67,7 @@ export const budgetRouter = createTRPCRouter({
 
   // ✅ Update budget
   updateBudget: baseProcedure
-    .input(budgetSchema)
+    .input(updateBudgetSchema)
     .mutation(async ({ ctx, input }) => {
       return await ctx.db
         .update(budget)
@@ -76,8 +76,9 @@ export const budgetRouter = createTRPCRouter({
           amount: input.amount,
           userId: input.userId,
           department: input.department,
+          updatedAt: new Date(),
         })
-        .where((budget, { eq }) => eq(budget.id, input.id))
+        .where(eq(budget.id, input.id)) // ✅ not a callback
         .returning();
     }),
 
@@ -86,9 +87,8 @@ export const budgetRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return await ctx.db
-        .delete()
-        .from(budget)
-        .where((budget, { eq }) => eq(budget.id, input.id));
+        .delete(budget) // ✅ Pass the table directly
+        .where(eq(budget.id, input.id)); // ✅ Use eq directly
     }),
   // ✅ Approve budget
   approveBudget: baseProcedure
@@ -98,10 +98,12 @@ export const budgetRouter = createTRPCRouter({
         .update(budget)
         .set({
           isApproved: true,
+          updatedAt: new Date(),
         })
-        .where((budget, { eq }) => eq(budget.id, input.id))
+        .where(eq(budget.id, input.id))
         .returning();
     }),
+
   // ✅ Reject budget
   rejectBudget: baseProcedure
     .input(z.object({ id: z.string() }))
@@ -110,8 +112,9 @@ export const budgetRouter = createTRPCRouter({
         .update(budget)
         .set({
           isApproved: false,
+          updatedAt: new Date(),
         })
-        .where((budget, { eq }) => eq(budget.id, input.id))
+        .where(eq(budget.id, input.id))
         .returning();
     }),
 });

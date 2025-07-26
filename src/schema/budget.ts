@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const budgetFormSchema = z.object({
-  title: z.string().min(2),
-  amount: z.string().min(1, "Amount is required"),
-  userId: z.string(),
+  title: z.string().min(1),
+  amount: z.coerce.number().positive(), // ✅ Fix here
+  userId: z.string().min(1),
   department: z.string().optional(),
 });
 
@@ -19,6 +19,10 @@ export const budgetSchema = z.object({
     }),
   userId: z.string(),
   department: z.string().optional(),
+});
+
+export const updateBudgetSchema = budgetSchema.extend({
+  id: z.string(),
 });
 
 export type BudgetPayload = z.infer<typeof budgetSchema>; // 👈 amount: number

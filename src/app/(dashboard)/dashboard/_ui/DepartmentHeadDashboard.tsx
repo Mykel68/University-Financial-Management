@@ -43,8 +43,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useBudget } from "@/hooks/budget";
+import { useState } from "react";
 
 export function DepartmentHeadDashboard() {
+  const [isOpen, setIsOpen] = useState(false);
   const { user } = useUserStore();
   const departmentStats = [
     {
@@ -121,7 +123,7 @@ export function DepartmentHeadDashboard() {
             <PlusCircle className="mr-2 h-4 w-4" />
             New Request
           </Button> */}
-          <Dialog>
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
               <Button variant="default">
                 <PlusCircle className="mr-2 h-4 w-4" />
@@ -133,7 +135,7 @@ export function DepartmentHeadDashboard() {
                 <DialogTitle>Create New Budget</DialogTitle>
               </DialogHeader>
 
-              <BudgetForm />
+              <BudgetForm setIsOpen={setIsOpen} />
             </DialogContent>
           </Dialog>
         </div>
@@ -237,67 +239,75 @@ export function DepartmentHeadDashboard() {
   );
 }
 
-const BudgetForm = () => {
+type BudgetFormProps = {
+  setIsOpen: (open: boolean) => void;
+};
+
+const BudgetForm = ({ setIsOpen }: BudgetFormProps) => {
   const { user } = useUserStore();
   const form = useForm<BudgetFormValues>({
     resolver: zodResolver(budgetFormSchema),
     defaultValues: {
       title: "",
-      amount: "",
+      amount: 0,
       userId: user?.id ?? "",
       department: user?.department ?? "",
     },
   });
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = form;
   const { createBudget, isLoading } = useBudget();
-
-  const onSubmit = (data: BudgetFormValues) => {
-    const parsed = budgetSchema.parse(data); // amount becomes number here ✅
-    createBudget(parsed); // API receives correct shape
-    form.reset();
+  const onSubmit = async (data: BudgetFormValues) => {
+    try {
+      await createBudget(data); // wait for it to complete
+      reset(); // clear form
+      setIsOpen(false); // close dialog
+    } catch (error) {
+      console.error("Error creating budget:", error);
+    }
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Project Title</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="e.g. Research Grant"
-                  {...field}
-                  disabled={isLoading}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium">Project Title</label>
+        <Input
+          type="text"
+          {...register("title")}
+          disabled={isLoading}
+          className="input input-bordered w-full"
+          placeholder="e.g. Research Grant"
         />
+        {errors.title && (
+          <p className="text-sm text-red-500">{errors.title.message}</p>
+        )}
+      </div>
 
-        <FormField
-          control={form.control}
-          name="amount"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Amount (₦)</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} disabled={isLoading} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+      <div>
+        <label className="block text-sm font-medium">Amount (₦)</label>
+        <Input
+          type="number"
+          {...register("amount")}
+          disabled={isLoading}
+          className="input input-bordered w-full"
         />
+        {errors.amount && (
+          <p className="text-sm text-red-500">{errors.amount.message}</p>
+        )}
+      </div>
 
-        <DialogFooter>
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Creating..." : "Create Budget"}
-          </Button>
-        </DialogFooter>
-      </form>
-    </Form>
+      <Button
+        type="submit"
+        disabled={isLoading}
+        className="btn btn-primary w-full"
+      >
+        {isLoading ? "Creating..." : "Create Budget"}
+      </Button>
+    </form>
   );
 };
