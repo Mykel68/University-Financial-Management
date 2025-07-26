@@ -24,10 +24,32 @@ export const budgetRouter = createTRPCRouter({
     }),
 
   // ✅ Get all budgets
-  getBudgets: baseProcedure.query(async ({ ctx }) => {
+  getApprovedBudgets: baseProcedure.query(async ({ ctx }) => {
     return await ctx.db.query.budget.findMany({
       where: (budget, { eq }) => eq(budget.isApproved, true),
     });
+  }),
+  // ✅ Get budget by id
+  getBudgetById: baseProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.query.budget.findMany({
+        where: (budget, { eq }) => eq(budget.id, input.id),
+      });
+    }),
+
+  // ✅ Get budget by user
+  getUserBudgets: baseProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.query.budget.findMany({
+        where: (budget, { eq }) => eq(budget.userId, input.userId),
+      });
+    }),
+
+  // ✅ Get all budgets
+  getBudgets: baseProcedure.query(async ({ ctx }) => {
+    return await ctx.db.query.budget.findMany();
   }),
 
   // ✅ Get budgets by department
