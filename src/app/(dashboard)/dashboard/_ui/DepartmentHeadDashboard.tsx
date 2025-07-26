@@ -246,7 +246,7 @@ type BudgetFormProps = {
 const BudgetForm = ({ setIsOpen }: BudgetFormProps) => {
   const { user } = useUserStore();
   const form = useForm<BudgetFormValues>({
-    resolver: zodResolver(budgetFormSchema),
+    resolver: zodResolver(budgetFormSchema as any),
     defaultValues: {
       title: "",
       amount: 0,
@@ -273,7 +273,7 @@ const BudgetForm = ({ setIsOpen }: BudgetFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
       <div>
         <label className="block text-sm font-medium">Project Title</label>
         <Input
