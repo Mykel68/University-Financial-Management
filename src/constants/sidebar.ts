@@ -1,4 +1,5 @@
 import {
+  Banknote,
   BarChart2,
   Building2,
   CreditCard,
@@ -37,6 +38,7 @@ export const roleBasedNav: RoleNavConfig = {
     { label: "Permissions", href: "/permissions", icon: Shield },
   ],
   finance_officer: [
+    { label: "Budgets", href: "/budget", icon: Banknote },
     { label: "Transactions", href: "/transactions", icon: Wallet },
     { label: "Invoices", href: "/invoices", icon: Receipt },
     { label: "Payments", href: "/payments", icon: CreditCard },

@@ -12,6 +12,7 @@ import Profile01 from "./Profile-01";
 import { ThemeToggle } from "./Theme-toggle";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { useUserStore } from "@/store/user";
+import { usePathname } from "next/navigation";
 
 interface BreadcrumbItem {
   label: string;
@@ -19,10 +20,11 @@ interface BreadcrumbItem {
 }
 
 export default function TopNav() {
+  const pathname = usePathname();
   const { user } = useUserStore();
   const breadcrumbs: BreadcrumbItem[] = [
     { label: "Anchor", href: "#" },
-    { label: "dashboard", href: "#" },
+    { label: pathname.split("/")[1] || "Home", href: pathname },
   ];
 
   if (!user) return null;
