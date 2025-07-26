@@ -12,6 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { getInitials, getRoleLabel } from "@/helpers/utils";
+import { useAuth } from "@/hooks/use-auth";
 
 interface MenuItem {
   label: string;
@@ -39,11 +40,15 @@ const defaultProfile = {
 export default function Profile01({
   //   name = defaultProfile.name,
   //   role = defaultProfile.role,
-  avatar = defaultProfile.avatar,
+  //   avatar = defaultProfile.avatar,
   subscription = defaultProfile.subscription,
 }: Partial<Profile01Props> = defaultProfile) {
   const { user } = useUserStore();
+
   if (!user) return null;
+
+  const { signOut } = useAuth();
+
   const menuItems: MenuItem[] = [
     {
       label: "Subscription",
@@ -129,7 +134,7 @@ export default function Profile01({
                                 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 
                                 rounded-lg transition-colors duration-200"
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2" onClick={signOut}>
                 <LogOut className="w-4 h-4" />
                 <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
                   Logout
