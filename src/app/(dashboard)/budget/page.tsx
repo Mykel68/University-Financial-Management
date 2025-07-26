@@ -30,6 +30,7 @@ import {
 import { BudgetRequestForm } from "./_ui/BudgetRequest";
 import { BudgetStats } from "./_ui/BudgetStats";
 import { BudgetFilters } from "./_ui/BudgetFilters";
+import { trpc } from "@/trpc/client";
 
 interface BudgetRequest {
   id: string;
@@ -96,32 +97,52 @@ const mockBudgetRequests: BudgetRequest[] = [
 ];
 
 const Budget = () => {
-  const [requests, setRequests] = useState<BudgetRequest[]>(mockBudgetRequests);
+  const { data, isLoading, error } = trpc.budget.budgetOverview.useQuery();
+  //   const [requests, setRequests] = useState<BudgetRequest[]>(mockBudgetRequests);
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterDepartment, setFilterDepartment] = useState<string>("all");
 
+  // Map budget data to BudgetRequest interface
+  const requests: BudgetRequest[] =
+    data?.budgets.map((budget) => ({
+      id: budget.id,
+      department: budget.department || "Unknown",
+      title: budget.title,
+      amount: budget.amount,
+      category: budget.department || "General", // Adjust based on your schema
+      status:
+        budget.isApproved === "approved"
+          ? "approved"
+          : budget.isApproved === "rejected"
+          ? "rejected"
+          : budget.isApproved === "pending"
+          ? "pending"
+          : "under_review", // Adjust logic if under_review is stored differently
+      submittedBy: "Unknown", // Replace with actual user data if available
+      submittedDate: new Date().toISOString().split("T")[0], // Replace with actual date if available
+      description: budget.title, // Replace with actual description if available
+      priority: "medium", // Replace with actual priority if available
+    })) || [];
+
   const handleApprove = (id: string) => {
-    setRequests((prev) =>
-      prev.map((req) =>
-        req.id === id ? { ...req, status: "approved" as const } : req
-      )
-    );
+    trpc.budget.approveBudget.mutate({ id });
   };
 
   const handleReject = (id: string) => {
-    setRequests((prev) =>
-      prev.map((req) =>
-        req.id === id ? { ...req, status: "rejected" as const } : req
-      )
-    );
+    trpc.budget.rejectBudget.mutate({ id });
   };
 
   const handleReview = (id: string) => {
-    setRequests((prev) =>
-      prev.map((req) =>
-        req.id === id ? { ...req, status: "under_review" as const } : req
-      )
-    );
+    // Assuming a custom mutation for setting under_review
+    // You may need to add this to budgetRouter if not already present
+    trpc.budget.updateBudget.mutate({
+      id,
+      status: "under_review", // Adjust based on your schema
+      title: requests.find((r) => r.id === id)?.title || "",
+      amount: requests.find((r) => r.id === id)?.amount || 0,
+      userId: requests.find((r) => r.id === id)?.submittedBy || "",
+      department: requests.find((r) => r.id === id)?.department || "",
+    });
   };
 
   const getStatusBadge = (status: string) => {
@@ -174,6 +195,19 @@ const Budget = () => {
       filterDepartment === "all" || req.department === filterDepartment;
     return statusMatch && departmentMatch;
   });
+
+  // Calculate department spending for chart
+  const departmentSpending = requests.reduce((acc, req) => {
+    if (!acc[req.department]) {
+      acc[req.department] = { allocated: 0, spent: 0 };
+    }
+    acc[req.department].allocated += req.amount;
+    acc[req.department].spent += req.status === "approved" ? req.amount : 0; // Adjust based on actual spent data
+    return acc;
+  }, {} as Record<string, { allocated: number; spent: number }>);
+
+  if (isLoading) return <div>Loading budget data...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
     <div className="container mx-auto py-6 space-y-6">

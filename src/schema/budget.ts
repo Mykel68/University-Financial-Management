@@ -19,6 +19,7 @@ export const budgetSchema = z.object({
     }),
   userId: z.string(),
   department: z.string().optional(),
+  spent: z.number().optional(),
 });
 
 export const updateBudgetSchema = budgetSchema.extend({

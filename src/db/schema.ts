@@ -1,11 +1,19 @@
 import {
   boolean,
   integer,
+  pgEnum,
   pgTable,
   text,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+
+export const approvalStatusEnum = pgEnum("approval_status", [
+  "pending",
+  "approved",
+  "rejected",
+  "under_review",
+]);
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(), // UUID
@@ -29,7 +37,7 @@ export const budget = pgTable("budget", {
   department: text("department").notNull(),
   spent: integer("spent").default(0).notNull(),
   userId: text("user_id").notNull(),
-  isApproved: boolean("is_approved").default(false).notNull(),
+  isApproved: approvalStatusEnum("is_approved").default("pending"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

@@ -117,4 +117,32 @@ export const budgetRouter = createTRPCRouter({
         .where(eq(budget.id, input.id))
         .returning();
     }),
+
+  budgetOverview: baseProcedure.query(async ({ ctx }) => {
+    // Get all budgets
+    const allBudgets = await ctx.db.query.budget.findMany({
+      columns: {
+        id: true,
+        title: true,
+        amount: true,
+        department: true,
+        isApproved: true,
+        spent: true,
+      },
+    });
+
+    // Calculate summary counts
+    const total = allBudgets.length;
+    const approved = allBudgets.filter((b) => b.isApproved === true).length;
+    const pending = allBudgets.filter((b) => b.isApproved === null).length;
+    const rejected = allBudgets.filter((b) => b.isApproved === false).length;
+
+    return {
+      total,
+      approved,
+      pending,
+      rejected,
+      budgets: allBudgets,
+    };
+  }),
 });

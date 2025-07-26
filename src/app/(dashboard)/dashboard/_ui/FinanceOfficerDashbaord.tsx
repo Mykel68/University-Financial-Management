@@ -22,8 +22,7 @@ import { useMemo } from "react";
 
 export function FinanceOfficerDashboard() {
   // ✅ Fetch budgets
-  const { data: budgets = [], isLoading } =
-    trpc.budget.getApprovedBudgets.useQuery();
+  const { data: budgets = [], isLoading } = trpc.budget.getBudgets.useQuery();
 
   // ✅ Calculate total and spent using memo
   const financialSummary = useMemo(() => {
