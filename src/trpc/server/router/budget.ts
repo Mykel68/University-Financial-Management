@@ -64,4 +64,54 @@ export const budgetRouter = createTRPCRouter({
           ),
       });
     }),
+
+  // ✅ Update budget
+  updateBudget: baseProcedure
+    .input(budgetSchema)
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db
+        .update(budget)
+        .set({
+          title: input.title,
+          amount: input.amount,
+          userId: input.userId,
+          department: input.department,
+        })
+        .where((budget, { eq }) => eq(budget.id, input.id))
+        .returning();
+    }),
+
+  // ✅ Delete budget
+  deleteBudget: baseProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db
+        .delete()
+        .from(budget)
+        .where((budget, { eq }) => eq(budget.id, input.id));
+    }),
+  // ✅ Approve budget
+  approveBudget: baseProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db
+        .update(budget)
+        .set({
+          isApproved: true,
+        })
+        .where((budget, { eq }) => eq(budget.id, input.id))
+        .returning();
+    }),
+  // ✅ Reject budget
+  rejectBudget: baseProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db
+        .update(budget)
+        .set({
+          isApproved: false,
+        })
+        .where((budget, { eq }) => eq(budget.id, input.id))
+        .returning();
+    }),
 });
