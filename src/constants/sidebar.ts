@@ -44,7 +44,7 @@ export const roleBasedNav: RoleNavConfig = {
     { label: "Payments", href: "/payments", icon: CreditCard },
   ],
   department_head: [
-    { label: "Meetings", href: "/meetings", icon: Video },
+    { label: "Expenses", href: "/expenses", icon: Receipt },
     { label: "Chat", href: "/chat", icon: MessagesSquare },
   ],
 };
