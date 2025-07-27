@@ -52,7 +52,7 @@ export default function Sidebar() {
       <Link
         href={href}
         onClick={handleNavigation}
-        className={` flex items-center px-3 py-2 text-sm rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-[#1F1F23] ${
+        className={` flex items-center px-3 py-2 text-sm rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-purple-300 dark:hover:bg-purple-300 ${
           active
             ? "bg-purple-700 text-purple-50 dark:bg-purple-900 dark:text-purple-50"
             : ""
