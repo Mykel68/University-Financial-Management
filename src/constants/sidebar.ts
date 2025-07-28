@@ -32,16 +32,16 @@ export const baseNav: NavItem[] = [
 export const roleBasedNav: RoleNavConfig = {
   system_admin: [
     { label: "Analytics", href: "/analytics", icon: BarChart2 },
-    { label: "Organization", href: "/organization", icon: Building2 },
+    { label: "Projects", href: "/projects", icon: Building2 },
     { label: "Projects", href: "/projects", icon: Folder },
     { label: "Members", href: "/members", icon: Users2 },
     { label: "Permissions", href: "/permissions", icon: Shield },
   ],
   finance_officer: [
     { label: "Budgets", href: "/budget", icon: Banknote },
-    { label: "Transactions", href: "/transactions", icon: Wallet },
-    { label: "Invoices", href: "/invoices", icon: Receipt },
-    { label: "Payments", href: "/payments", icon: CreditCard },
+    { label: "Transactions", href: "/transaction", icon: Wallet },
+    // { label: "Invoices", href: "/invoices", icon: Receipt },
+    // { label: "Payments", href: "/payments", icon: CreditCard },
   ],
   department_head: [
     { label: "Expenses", href: "/expenses", icon: Receipt },
