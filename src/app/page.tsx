@@ -207,7 +207,7 @@ const SchoolFinanceLandingPage = () => {
 
             {/* Dashboard Preview */}
             <div className="relative">
-              <div className="bg-white rounded-2xl shadow-2xl p-6 transform rotate-2 hover:rotate-0 transition-transform duration-500">
+              {/* <div className="bg-white rounded-2xl shadow-2xl p-6 transform rotate-2 hover:rotate-0 transition-transform duration-500">
                 <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 rounded-lg mb-4">
                   <div className="flex items-center justify-between text-white">
                     <h3 className="font-semibold">Financial Overview</h3>
@@ -219,7 +219,7 @@ const SchoolFinanceLandingPage = () => {
                     <p className="text-emerald-600 text-sm font-medium">
                       Total Revenue
                     </p>
-                    <p className="text-2xl font-bold text-emerald-700">$2.4M</p>
+                    <p className="text-2xl font-bold text-emerald-700">₦2.4M</p>
                   </div>
                   <div className="bg-blue-50 p-3 rounded-lg">
                     <p className="text-blue-600 text-sm font-medium">
@@ -243,7 +243,16 @@ const SchoolFinanceLandingPage = () => {
                 </div>
               </div>
               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-to-r from-orange-400 to-pink-400 rounded-full opacity-20 animate-pulse"></div>
-              <div className="absolute -top-4 -left-4 w-16 h-16 bg-gradient-to-r from-emerald-400 to-blue-400 rounded-full opacity-20 animate-pulse delay-1000"></div>
+              <div className="absolute -top-4 -left-4 w-16 h-16 bg-gradient-to-r from-emerald-400 to-blue-400 rounded-full opacity-20 animate-pulse delay-1000"></div> */}
+              <Image
+                src="/images/dashboard.png"
+                alt="Dashboard"
+                width={1000}
+                height={1000}
+                priority
+                className="rounded-2xl shadow-2xl p-1 cursor-pointer transform rotate-2 hover:rotate-0 transition-transform duration-500"
+                style={{ objectFit: "cover" }}
+              />
             </div>
           </div>
         </div>
